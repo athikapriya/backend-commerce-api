@@ -13,7 +13,7 @@ class Category(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["parent_id","name"]
         verbose_name_plural = "Categories"
 
     def __str__(self):
