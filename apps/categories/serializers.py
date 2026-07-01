@@ -18,6 +18,7 @@ class ChildCategorySerializer(serializers.ModelSerializer):
 # =============== Start Category Serializer section ===============
 class CategorySerializer(serializers.ModelSerializer):
     children = ChildCategorySerializer(many=True, read_only=True)
+    total_products = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Category
@@ -26,5 +27,6 @@ class CategorySerializer(serializers.ModelSerializer):
             "name",
             "slug",
             "children",
+            "total_products",
         )
 # =============== End Category Serializer seciton ===============
