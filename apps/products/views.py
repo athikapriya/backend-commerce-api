@@ -59,3 +59,22 @@ class ProductAPIView(generics.ListCreateAPIView):
     # ===== End permissions =====
 
 # =============== End Product API View seciton ===============
+
+
+
+# =============== Start ProductDetails API View section ===============
+class ProductDetailsAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = (
+        Product.objects.filter(is_active=True).select_related("category")
+    )
+    serializer_class = ProductSerializer
+    lookup_field = 'slug'
+    lookup_url_kwarg = "slug"
+
+    def get_permissions(self):
+        if self.request.method in ["PUT", "PATCH", "DELETE"]:
+            self.permission_classes = [IsAdminUser]
+        else:
+            self.permission_classes = [AllowAny]
+        return super().get_permissions()
+# =============== End ProductDetails API View seciton ===============
