@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'silk',
     'django_filters',
     'rest_framework_simplejwt',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
 
     'apps.users',
     'apps.categories',
@@ -144,6 +146,7 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 SIMPLE_JWT = {
@@ -152,4 +155,25 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
     "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'BackendCommerce REST API',
+    "DESCRIPTION": """
+A RESTful e-commerce backend built with Django REST Framework.
+
+Features:
+- JWT Authentication
+- Product, Category and Order APIs
+- Product search, filtering, ordering and pagination
+- Nested category hierarchy
+- Customer-specific order access
+- Admin-only product and order management
+- Interactive API documentation with Swagger UI and ReDoc
+""",
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    "SWAGGER_UI_SETTINGS": {
+        "persistAuthorization": True,
+    },
 }

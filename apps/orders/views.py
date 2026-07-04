@@ -1,11 +1,20 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from drf_spectacular.utils import extend_schema
 
 from .models import Order
 from .serializers import OrderSerializer
 
 
 # =============== Start OrderAPIView section ===============
+@extend_schema(
+    summary="List Orders",
+    description=(
+        "Returns orders for the authenticated user. "
+        "Administrators receive all orders."
+    ),
+    tags=["Orders"],
+)
 class OrderListAPIView(generics.ListAPIView):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
@@ -20,6 +29,15 @@ class OrderListAPIView(generics.ListAPIView):
 
 
 # =============== Start OrderDetailsAPIView section ===============
+@extend_schema(
+    summary="Retrieve, Update or Delete Order",
+    description=(
+        "Retrieve an order by UUID. "
+        "Customers can access only their own orders. "
+        "Only administrators can update or delete orders."
+    ),
+    tags=["Orders"],
+)
 class OrderDetailApIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = OrderSerializer
     lookup_field = "order_id"

@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from drf_spectacular.utils import extend_schema
 
 from .serializers import ProductSerializer
 from .filters import ProductFilter
@@ -18,6 +19,15 @@ class ProductPagination(PageNumberPagination):
 
 
 # =============== Start Product API View section ===============
+@extend_schema(
+    summary="List and Create Products",
+    description=(
+        "Lists all active products with pagination, searching, "
+        "filtering and ordering. "
+        "Admins can create new products."
+    ),
+    tags=["Products"],
+)
 class ProductAPIView(generics.ListCreateAPIView):
     
     queryset = Product.objects.filter(
@@ -63,6 +73,14 @@ class ProductAPIView(generics.ListCreateAPIView):
 
 
 # =============== Start ProductDetails API View section ===============
+@extend_schema(
+    summary="Retrieve, Update or Delete Product",
+    description=(
+        "Retrieve a single product using its slug. "
+        "Only administrators can update or delete products."
+    ),
+    tags=["Products"],
+)
 class ProductDetailsAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = (
         Product.objects.filter(is_active=True).select_related("category")
