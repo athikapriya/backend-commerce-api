@@ -42,3 +42,6 @@ coverage.xml
 htmlcov/ 
 .tox/ 
 .nox/
+
+# HTTP request files
+*.http

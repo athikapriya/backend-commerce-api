@@ -1,0 +1,269 @@
+### ============================================================
+### E-commerce API — REST Client Collection
+### ============================================================
+
+### Requirements:
+
+### - Install the "REST Client" extension in VS Code.
+
+### - Run the authentication requests first.
+
+### - Copy the returned access/refresh tokens into the variables below.
+
+### ============================================================
+
+@baseUrl = http://127.0.0.1:8000/api
+
+@adminToken = YOUR_ADMIN_ACCESS_TOKEN
+@customerToken = YOUR_CUSTOMER_ACCESS_TOKEN
+@refreshToken = YOUR_REFRESH_TOKEN
+
+@productSlug = YOUR_PRODUCT_SLUG
+@orderId = YOUR_ORDER_UUID
+
+### ============================================================
+### AUTHENTICATION
+### ============================================================
+
+### Obtain JWT Access Token (Admin)
+
+POST {{baseUrl}}/token/ HTTP/1.1
+Content-Type: application/json
+
+{
+"username": "admin",
+"password": "YOUR_ADMIN_PASSWORD"
+}
+
+###
+
+### Obtain JWT Access Token (Customer)
+
+POST {{baseUrl}}/token/ HTTP/1.1
+Content-Type: application/json
+
+{
+"username": "Customer1",
+"password": "YOUR_CUSTOMER_PASSWORD"
+}
+
+###
+
+### Refresh JWT Access Token
+
+POST {{baseUrl}}/token/refresh/ HTTP/1.1
+Content-Type: application/json
+
+{
+"refresh": "{{refreshToken}}"
+}
+
+### ============================================================
+
+### CATEGORIES
+### ============================================================
+
+### Get all categories
+
+GET {{baseUrl}}/categories/ HTTP/1.1
+
+### ============================================================
+
+### PRODUCTS - LIST, SEARCH, FILTER & PAGINATION
+### ============================================================
+
+### Get all products
+
+GET {{baseUrl}}/products/ HTTP/1.1
+
+###
+
+### Search products by name
+
+GET {{baseUrl}}/products/?search=milk HTTP/1.1
+
+###
+
+### Search by category name
+
+GET {{baseUrl}}/products/?search=dairy HTTP/1.1
+
+###
+
+### Filter by category slug
+
+GET {{baseUrl}}/products/?category=milk-dairy HTTP/1.1
+
+###
+
+### Filter by minimum price
+
+GET {{baseUrl}}/products/?min_price=100 HTTP/1.1
+
+###
+
+### Filter by maximum price
+
+GET {{baseUrl}}/products/?max_price=500 HTTP/1.1
+
+###
+
+### Filter by price range
+
+GET {{baseUrl}}/products/?min_price=100&max_price=500 HTTP/1.1
+
+###
+
+### Products currently in stock
+
+GET {{baseUrl}}/products/?in_stock=true HTTP/1.1
+
+###
+
+### Products out of stock
+
+GET {{baseUrl}}/products/?in_stock=false HTTP/1.1
+
+###
+
+### Exact product name
+
+GET {{baseUrl}}/products/?name__iexact=Milk Powder HTTP/1.1
+
+###
+
+### Product name contains
+
+GET {{baseUrl}}/products/?name__icontains=milk HTTP/1.1
+
+###
+
+### Order by lowest price
+
+GET {{baseUrl}}/products/?ordering=price HTTP/1.1
+
+###
+
+### Order by highest price
+
+GET {{baseUrl}}/products/?ordering=-price HTTP/1.1
+
+###
+
+### Order by newest
+
+GET {{baseUrl}}/products/?ordering=-created_at HTTP/1.1
+
+###
+
+### Order alphabetically
+
+GET {{baseUrl}}/products/?ordering=name HTTP/1.1
+
+###
+
+### Pagination - Page 2
+
+GET {{baseUrl}}/products/?page=2 HTTP/1.1
+
+###
+
+### Pagination - Custom page size
+
+GET {{baseUrl}}/products/?size=5 HTTP/1.1
+
+###
+
+### Pagination - Page 2 with custom page size
+
+GET {{baseUrl}}/products/?page=2&size=5 HTTP/1.1
+
+###
+
+### Combined filters
+
+GET {{baseUrl}}/products/?category=milk-dairy&min_price=50&max_price=500&ordering=price HTTP/1.1
+
+### ============================================================
+### PRODUCT DETAILS
+### ============================================================
+
+### Get product by slug
+
+GET {{baseUrl}}/products/{{productSlug}}/ HTTP/1.1
+
+###
+
+### Update product (Admin only)
+
+PUT {{baseUrl}}/products/{{productSlug}}/ HTTP/1.1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+"category": 2,
+"name": "Milk",
+"price": "99.00",
+"stock": 120
+}
+
+###
+
+### Partially update product (Admin only)
+
+PATCH {{baseUrl}}/products/{{productSlug}}/ HTTP/1.1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+"stock": 150
+}
+
+###
+
+### Delete product (Admin only)
+
+DELETE {{baseUrl}}/products/{{productSlug}}/ HTTP/1.1
+Authorization: Bearer {{adminToken}}
+
+### ============================================================
+### ORDERS
+### ============================================================
+
+### List customer orders
+
+GET {{baseUrl}}/orders/ HTTP/1.1
+Authorization: Bearer {{customerToken}}
+
+###
+
+### List all orders (Admin)
+
+GET {{baseUrl}}/orders/ HTTP/1.1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Get order details
+
+GET {{baseUrl}}/orders/{{orderId}}/ HTTP/1.1
+Authorization: Bearer {{customerToken}}
+
+###
+
+### Update order status (Admin only)
+
+PATCH {{baseUrl}}/orders/{{orderId}}/ HTTP/1.1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+"status": "CONFIRMED"
+}
+
+###
+
+### Delete order (Admin only)
+
+DELETE {{baseUrl}}/orders/{{orderId}}/ HTTP/1.1
+Authorization: Bearer {{adminToken}}
