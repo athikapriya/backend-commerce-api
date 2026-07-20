@@ -59,7 +59,6 @@ Content-Type: application/json
 }
 
 ### ============================================================
-
 ### CATEGORIES
 ### ============================================================
 
@@ -68,7 +67,6 @@ Content-Type: application/json
 GET {{baseUrl}}/categories/ HTTP/1.1
 
 ### ============================================================
-
 ### PRODUCTS - LIST, SEARCH, FILTER & PAGINATION
 ### ============================================================
 
@@ -230,40 +228,202 @@ Authorization: Bearer {{adminToken}}
 ### ORDERS
 ### ============================================================
 
-### List customer orders
+### Create Order (Customer)
+
+POST {{baseUrl}}/orders/ HTTP/1.1
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "product": 1,
+      "quantity": 2
+    },
+    {
+      "product": 5,
+      "quantity": 1
+    }
+  ]
+}
+
+###
+
+### List My Orders (Customer)
 
 GET {{baseUrl}}/orders/ HTTP/1.1
 Authorization: Bearer {{customerToken}}
 
 ###
 
-### List all orders (Admin)
+### List All Orders (Admin)
 
 GET {{baseUrl}}/orders/ HTTP/1.1
 Authorization: Bearer {{adminToken}}
 
 ###
 
-### Get order details
+### Retrieve Order Details
 
 GET {{baseUrl}}/orders/{{orderId}}/ HTTP/1.1
 Authorization: Bearer {{customerToken}}
 
 ###
 
-### Update order status (Admin only)
+### Filter Orders by Status
+
+GET {{baseUrl}}/orders/?status=PENDING HTTP/1.1
+Authorization: Bearer {{customerToken}}
+
+###
+
+### Filter Orders by Created Date
+
+GET {{baseUrl}}/orders/?created_at=2026-07-20 HTTP/1.1
+Authorization: Bearer {{customerToken}}
+
+###
+
+### Orders Created On or After Date
+
+GET {{baseUrl}}/orders/?created_at__gte=2026-07-01 HTTP/1.1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Orders Created On or Before Date
+
+GET {{baseUrl}}/orders/?created_at__lte=2026-07-31 HTTP/1.1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Filter by Minimum Total Price
+
+GET {{baseUrl}}/orders/?total_price__gte=500 HTTP/1.1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Filter by Maximum Total Price
+
+GET {{baseUrl}}/orders/?total_price__lte=2000 HTTP/1.1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Filter by Total Price Range
+
+GET {{baseUrl}}/orders/?total_price__gte=500&total_price__lte=2000 HTTP/1.1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Order by Newest
+
+GET {{baseUrl}}/orders/?ordering=-created_at HTTP/1.1
+Authorization: Bearer {{customerToken}}
+
+###
+
+### Order by Oldest
+
+GET {{baseUrl}}/orders/?ordering=created_at HTTP/1.1
+Authorization: Bearer {{customerToken}}
+
+###
+
+### Order by Highest Total Price
+
+GET {{baseUrl}}/orders/?ordering=-total_price HTTP/1.1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Order by Lowest Total Price
+
+GET {{baseUrl}}/orders/?ordering=total_price HTTP/1.1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Update Order Items (Customer)
+### Only works while order status is PENDING
+
+PUT {{baseUrl}}/orders/{{orderId}}/ HTTP/1.1
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "product": 2,
+      "quantity": 3
+    },
+    {
+      "product": 8,
+      "quantity": 1
+    }
+  ]
+}
+
+###
+
+### Partially Update Order Items (Customer)
+### Only works while order status is PENDING
+
+PATCH {{baseUrl}}/orders/{{orderId}}/ HTTP/1.1
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "product": 3,
+      "quantity": 2
+    }
+  ]
+}
+
+###
+
+### Update Order Status (Admin Only)
 
 PATCH {{baseUrl}}/orders/{{orderId}}/ HTTP/1.1
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-"status": "CONFIRMED"
+  "status": "CONFIRMED"
 }
 
 ###
 
-### Delete order (Admin only)
+### Mark Order as Delivered (Admin Only)
+
+PATCH {{baseUrl}}/orders/{{orderId}}/ HTTP/1.1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "DELIVERED"
+}
+
+###
+
+### Cancel Order (Admin Only)
+
+PATCH {{baseUrl}}/orders/{{orderId}}/ HTTP/1.1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "CANCELED"
+}
+
+###
+
+### Delete Order (Admin Only)
 
 DELETE {{baseUrl}}/orders/{{orderId}}/ HTTP/1.1
 Authorization: Bearer {{adminToken}}
