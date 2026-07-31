@@ -1,6 +1,8 @@
 from rest_framework import generics
 from django.db.models import Count
 from drf_spectacular.utils import extend_schema
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 from .models import Category
 from .serializers import CategorySerializer
@@ -25,4 +27,8 @@ class CategoryAPIView(generics.ListAPIView):
             ).prefetch_related("children")
     
     serializer_class = CategorySerializer
+
+    @method_decorator(cache_page(60 * 60, key_prefix="category_list"))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 # =============== End Category API views seciton ===============

@@ -4,6 +4,8 @@ from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from drf_spectacular.utils import extend_schema
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 from .serializers import ProductSerializer
 from .filters import ProductFilter
@@ -60,6 +62,12 @@ class ProductAPIView(generics.ListCreateAPIView):
     
     ordering = ["-created_at"]
     # ===== End Filtering, searching, ordering =====
+
+    # ===== start caching =====
+    @method_decorator(cache_page(60 * 15, key_prefix="product_list"))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    # ===== End caching =====
     
     # ===== start permissions =====
     def get_permissions(self):
@@ -83,7 +91,7 @@ class ProductAPIView(generics.ListCreateAPIView):
     tags=["Products"],
 )
 class ProductDetailsAPIView(generics.RetrieveUpdateDestroyAPIView):
-    thorttle_scope = "product"
+    throttle_scope = "product"
     queryset = (
         Product.objects.filter(is_active=True).select_related("category")
     )
