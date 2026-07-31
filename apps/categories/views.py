@@ -17,6 +17,7 @@ from .serializers import CategorySerializer
     tags=["Categories"],
 )
 class CategoryAPIView(generics.ListAPIView):
+    throttle_scope = "categories"
     queryset = Category.objects.filter(
         parent__isnull=True
         ).annotate(

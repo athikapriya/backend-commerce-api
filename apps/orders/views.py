@@ -63,6 +63,7 @@ from .filters import OrderFilter
     ),
 )
 class OrderviewSet(viewsets.ModelViewSet):
+    throttle_scope = "orders"
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]

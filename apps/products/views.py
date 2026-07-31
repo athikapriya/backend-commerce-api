@@ -29,6 +29,7 @@ class ProductPagination(PageNumberPagination):
     tags=["Products"],
 )
 class ProductAPIView(generics.ListCreateAPIView):
+    throttle_scope = "products"
     
     queryset = Product.objects.filter(
         is_active=True,
@@ -82,6 +83,7 @@ class ProductAPIView(generics.ListCreateAPIView):
     tags=["Products"],
 )
 class ProductDetailsAPIView(generics.RetrieveUpdateDestroyAPIView):
+    thorttle_scope = "product"
     queryset = (
         Product.objects.filter(is_active=True).select_related("category")
     )
