@@ -160,11 +160,15 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         "register": "5/min",
         "login": "10/min",
+        "logout": "10/min",
+
+        'profile' : "10/min",
+        "change_password": "5/min",
 
         "categories" : "30/min",
 
         "orders" : "20/min",
-        
+
         "products" : "100/min",
         "product" : "10/min",
     }
