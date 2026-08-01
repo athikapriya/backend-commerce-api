@@ -25,37 +25,51 @@
 ### AUTHENTICATION
 ### ============================================================
 
-### Obtain JWT Access Token (Admin)
+### Register Customer
 
-POST {{baseUrl}}/token/ HTTP/1.1
+POST {{baseUrl}}/users/register/ HTTP/1.1
 Content-Type: application/json
 
 {
-"username": "admin",
-"password": "YOUR_ADMIN_PASSWORD"
+  "username": "customer9",
+  "email": "customer6@test.com",
+  "password": "StrongPassword123!",
+  "confirm_password": "StrongPassword123!"
 }
 
 ###
 
-### Obtain JWT Access Token (Customer)
+### Login (Admin)
 
-POST {{baseUrl}}/token/ HTTP/1.1
+POST {{baseUrl}}/users/login/ HTTP/1.1
 Content-Type: application/json
 
 {
-"username": "Customer1",
-"password": "YOUR_CUSTOMER_PASSWORD"
+  "username": "admin",
+  "password": "YOUR_ADMIN_PASSWORD"
 }
 
 ###
 
-### Refresh JWT Access Token
+### Login (Customer)
 
-POST {{baseUrl}}/token/refresh/ HTTP/1.1
+POST {{baseUrl}}/users/login/ HTTP/1.1
 Content-Type: application/json
 
 {
-"refresh": "{{refreshToken}}"
+  "username": "Customer1",
+  "password": "YOUR_CUSTOMER_PASSWORD"
+}
+
+###
+
+### Refresh Access Token
+
+POST {{baseUrl}}/users/token/refresh/ HTTP/1.1
+Content-Type: application/json
+
+{
+  "refresh": "{{refreshToken}}"
 }
 
 ### ============================================================
