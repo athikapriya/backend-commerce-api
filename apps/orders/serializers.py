@@ -3,6 +3,7 @@ from django.db import transaction
 from decimal import Decimal
 
 from .models import Order, OrderItem
+from apps.products.models import Product
 
 
 # =============== Start OrderItem serializer section ===============
@@ -35,13 +36,22 @@ class OrderItemCreateSerializer(serializers.ModelSerializer):
 # =============== Start OrderCreateSerializer section ===============
 class OrderCreateSerializer(serializers.ModelSerializer):
     order_id = serializers.UUIDField(read_only=True)
-    items = OrderItemCreateSerializer(many=True, allow_empty=False, required=False)
+    items = OrderItemCreateSerializer(many=True, allow_empty=False)
 
     def _calculate_total(self, order, items_data):
         total_price = Decimal("0.00")
 
+        product_ids = [item["product"].id for item in items_data]
+
+        locked_products = {
+            p.id: p
+            for p in Product.objects.select_for_update().filter(
+                id__in=product_ids
+            ).order_by("id")
+        }
+
         for item in items_data:
-            product = item["product"]
+            product = locked_products[item["product"].id]
             quantity = item["quantity"]
 
             if quantity > product.stock:
@@ -50,7 +60,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
                 )
 
         for item in items_data:
-            product = item["product"]
+            product = locked_products[item["product"].id]
             quantity = item["quantity"]
             unit_price = product.price
 
@@ -93,7 +103,10 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         items_data = validated_data.pop("items", None)
 
-        if items_data is not None and instance.status != Order.StatusChoices.PENDING:
+        if (
+            items_data is not None
+            and instance.status != Order.StatusChoices.PENDING
+        ):
             raise serializers.ValidationError(
                 "Only pending orders can be modified."
             )
@@ -103,8 +116,19 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         if items_data is None:
             return instance
 
-        for item in instance.items.all():
-            product = item.product
+        old_items = list(instance.items.all())
+
+        product_ids = [item.product_id for item in old_items]
+
+        locked_products = {
+            p.id: p
+            for p in Product.objects.select_for_update()
+            .filter(id__in=product_ids)
+            .order_by("id")
+        }
+
+        for item in old_items:
+            product = locked_products[item.product_id]
             product.stock += item.quantity
             product.save(update_fields=["stock"])
 
