@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 
-from .serializers import RegisterSerializer, LogoutSerializer, UserProfileSerializer, UpdateProfileSerializer, ChangePasswordSerializer
+from .serializers import *
 
 
 # =============== Start RegisterAPIView section ===============
@@ -113,3 +113,51 @@ class ChangePasswordAPIView(generics.UpdateAPIView):
             status=status.HTTP_200_OK,
         )
 # =============== End ChangePasswordAPIView seciton ===============
+
+
+# =============== Start ForgetPasswordAPIView section ===============
+@extend_schema(
+    summary="Forgot Password",
+    description="Send a password reset email.",
+    tags=["Authentication"],
+)
+class ForgetPasswordAPIView(generics.GenericAPIView):
+    serializer_class = ForgetPasswordSerializer
+    throttle_scope = "forget_password"
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {"detail" : "Password reset email sent."},
+            status=status.HTTP_200_OK,
+        )
+# =============== End ForgetPasswordAPIView seciton ===============
+
+
+# =============== Start ResetPasswordAPIView section ===============
+@extend_schema(
+    summary="Reset Password",
+    description="Reset password using the uid and token sent by email.",
+    tags=["Authentication"],
+)
+class ResetPasswordAPIView(generics.GenericAPIView):
+    serializer_class = ResetPasswordSerializer
+    throttle_scope = "forget_password"
+
+    def post(self, request, uid, token):
+        serializer = self.get_serializer(
+            data=request.data,
+            context={
+                "uid": uid,
+                "token": token,
+            },
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {"detail": "Password has been reset successfully."},
+            status=status.HTTP_200_OK,
+        )
+# =============== End ResetPasswordAPIView seciton ===============

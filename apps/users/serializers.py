@@ -3,6 +3,12 @@ from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.core.mail import send_mail
+
+from django.conf import settings
 
 User = get_user_model()
 
@@ -139,3 +145,78 @@ class ChangePasswordSerializer(serializers.Serializer):
         )
         user.save()
 # =============== End ChangePasswordSerializer seciton ===============
+
+
+# =============== Start ForgetPasswordSerializer section ===============
+class ForgetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        if not User.objects.filter(email=value).exists():
+            raise serializers.ValidationError(
+                "No account found with this email."
+            )
+
+        return value
+
+    def save(self):
+        user = User.objects.get(email=self.validated_data["email"])
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = PasswordResetTokenGenerator().make_token(user)
+        reset_url = (f"http://127.0.0.1:8000/api/users/reset-password/{uid}/{token}/")
+        send_mail(
+        subject="Password Reset Request",
+        message=f"""
+    Hello {user.username},
+
+    To reset your password, click the link below:
+
+    {reset_url}
+
+    If you didn't request a password reset, no further action is required.
+
+    BackendCommerce Team
+    """.strip(),
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[user.email],
+    )
+# =============== End ForgetPasswordSerializer seciton ===============
+
+
+# =============== Start ResetPasswordSerializer section ===============
+class ResetPasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField( write_only=True, min_length=8, style={"input_type": "password"})
+    confirm_password = serializers.CharField(write_only=True, style={"input_type": "password"})
+
+    def validate_new_password(self, value):
+        validate_password(value)
+        return value
+
+    def validate(self, attrs):
+        if attrs["new_password"] != attrs["confirm_password"]:
+            raise serializers.ValidationError(
+                {"confirm_password": "Passwords do not match."}
+            )
+        return attrs
+
+    def save(self):
+        uid = self.context["uid"]
+        token = self.context["token"]
+
+        try:
+            user_id = force_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=user_id)
+
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            raise serializers.ValidationError(
+                {"detail": "Invalid reset link."}
+            )
+
+        if not PasswordResetTokenGenerator().check_token(user, token):
+            raise serializers.ValidationError(
+                {"detail": "Reset link is invalid or has expired."}
+            )
+
+        user.set_password(self.validated_data["new_password"])
+        user.save()
+# =============== End ResetPasswordSerializer section ===============
