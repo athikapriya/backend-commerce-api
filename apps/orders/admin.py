@@ -12,13 +12,13 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = (
         "order_id",
         "user",
-        "status",
+        "order_status",
         "total_price",
         "created_at",
     )
 
     list_filter = (
-        "status",
+        "order_status",
         "created_at",
     )
 

@@ -105,7 +105,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
         if (
             items_data is not None
-            and instance.status != Order.StatusChoices.PENDING
+            and instance.order_status != Order.StatusChoices.PENDING
         ):
             raise serializers.ValidationError(
                 "Only pending orders can be modified."
@@ -143,7 +143,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
         request = self.context.get("request")
         if request and not request.user.is_staff:
-            fields["status"].read_only = True
+            fields["order_status"].read_only = True
 
         return fields
 
@@ -151,7 +151,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         model = Order
         fields = (
             "order_id",
-            "status",
+            "order_status",
             "items",
         )
 # =============== End OrderCreateSerializer seciton ===============
@@ -167,11 +167,12 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = (
-            'user',
+            "user",
             "order_id",
-            "status",
+            "order_status",
+            "payment_status",
             "items",
             "created_at",
-            "total_price"
+            "total_price",
         )
 # =============== End Order Serializer seciton ===============

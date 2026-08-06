@@ -10,7 +10,8 @@ class OrderFilter(django_filters.FilterSet):
     class Meta:
         model = Order
         fields = {
-            "status" : ["exact"],
+            "order_status": ["exact"],
+            "payment_status": ["exact"],
             "created_at": ["exact", "gte", "lte"],
             "total_price": ["exact", "gte", "lte"],
         }

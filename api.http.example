@@ -379,10 +379,38 @@ Authorization: Bearer {{customerToken}}
 
 ###
 
-### Filter Orders by Status
+### Filter Orders by Order Status
 
-GET {{baseUrl}}/orders/?status=PENDING HTTP/1.1
+GET {{baseUrl}}/orders/?order_status=PENDING HTTP/1.1
 Authorization: Bearer {{customerToken}}
+
+###
+
+### Filter Orders by Payment Status
+
+GET {{baseUrl}}/orders/?payment_status=PENDING HTTP/1.1
+Authorization: Bearer {{customerToken}}
+
+###
+
+### Filter Paid Orders
+
+GET {{baseUrl}}/orders/?payment_status=PAID HTTP/1.1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Filter Failed Payments
+
+GET {{baseUrl}}/orders/?payment_status=FAILED HTTP/1.1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Filter Refunded Orders
+
+GET {{baseUrl}}/orders/?payment_status=REFUNDED HTTP/1.1
+Authorization: Bearer {{adminToken}}
 
 ###
 
@@ -503,7 +531,7 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-  "status": "CONFIRMED"
+  "order_status": "CONFIRMED"
 }
 
 ###
@@ -515,7 +543,7 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-  "status": "DELIVERED"
+  "order_status": "DELIVERED"
 }
 
 ###
@@ -527,7 +555,7 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-  "status": "CANCELED"
+  "order_status": "CANCELED"
 }
 
 ###
