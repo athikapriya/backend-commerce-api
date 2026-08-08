@@ -13,6 +13,7 @@ class OrderAdmin(admin.ModelAdmin):
         "order_id",
         "user",
         "order_status",
+        "payment_status",
         "total_price",
         "created_at",
     )

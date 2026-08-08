@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'apps.categories',
     "apps.products",
     'apps.orders',
+    "apps.payments",
 ]
 
 MIDDLEWARE = [
@@ -227,3 +228,8 @@ EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 # =============== End Email Configuration seciton ===============
+
+
+STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLISHABLE_KEY")
+STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET", default="")

@@ -564,3 +564,30 @@ Content-Type: application/json
 
 DELETE {{baseUrl}}/orders/{{orderId}}/ HTTP/1.1
 Authorization: Bearer {{adminToken}}
+
+### ============================================================
+### PAYMENTS
+### ============================================================
+
+### Create Payment Intent
+
+POST {{baseUrl}}/payments/create-payment-intent/ HTTP/1.1
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{
+    "order_id": "{{orderId}}"
+}
+
+### Stripe Webhook 
+### This endpoint is called by Stripe, not directly by the client. 
+### Stripe CLI can be used locally to forward webhook events: 
+### 
+### stripe listen --forward-to localhost:8000/api/payments/webhook/ 
+### 
+### Then trigger a test event: 
+### 
+### stripe trigger payment_intent.succeeded 
+### 
+### The webhook verifies the Stripe-Signature header and updates 
+### the corresponding order's payment status automatically.

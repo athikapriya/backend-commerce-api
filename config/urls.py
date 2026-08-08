@@ -26,6 +26,7 @@ urlpatterns = [
     path("api/categories/", include("apps.categories.urls")),
     path("api/products/", include("apps.products.urls")),
     path("api/orders/", include("apps.orders.urls")),
+    path("api/payments/", include("apps.payments.urls")),
 
     path('silk/', include('silk.urls', namespace='silk')),
 
