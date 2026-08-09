@@ -9,7 +9,17 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      SECRET_KEY: "django-test-secret-key"
+      EMAIL_BACKEND: "django.core.mail.backends.locmem.EmailBackend"
+      EMAIL_HOST: "localhost"
+      EMAIL_PORT: "587"
+      EMAIL_HOST_USER: "test@example.com"
+      EMAIL_HOST_PASSWORD: "test-password"
+      EMAIL_USE_TLS: "False"
+      DEFAULT_FROM_EMAIL: "test@example.com"
+      STRIPE_SECRET_KEY: "sk_test_dummy"
+      STRIPE_PUBLISHABLE_KEY: "pk_test_dummy"
+      STRIPE_WEBHOOK_SECRET: "whsec_test_dummy"
 
     steps:
       - name: Checkout code
