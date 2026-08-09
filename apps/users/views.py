@@ -9,6 +9,7 @@ from rest_framework.response import Response
 
 
 from .serializers import *
+from .tasks import send_welcome_email
 
 
 # =============== Start RegisterAPIView section ===============
@@ -20,6 +21,14 @@ from .serializers import *
 class RegisterAPIView(generics.CreateAPIView):
     throttle_scope = "register"
     serializer_class = RegisterSerializer
+
+    def perform_create(self, serializer):
+        user = serializer.save()
+
+        send_welcome_email.delay(
+            user.email,
+            user.username,
+        )
 # =============== End RegisterAPIView seciton ===============
 
 

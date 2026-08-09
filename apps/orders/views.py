@@ -3,10 +3,12 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework import filters, viewsets, status
+from django.db import transaction
 
 from .models import Order
 from .serializers import OrderSerializer, OrderCreateSerializer
 from .filters import OrderFilter
+from .tasks import send_order_confirmation_email, send_order_status_email
 
 
 # =============== Start OrderViewSet section ===============
@@ -75,7 +77,32 @@ class OrderviewSet(viewsets.ModelViewSet):
     ordering = ["-created_at"]
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        order = serializer.save(user=self.request.user)
+
+        transaction.on_commit(
+            lambda: send_order_confirmation_email.delay(
+                order.user.email,
+                order.user.username,
+                str(order.order_id),
+                str(order.total_price),
+            )
+        )
+
+    def perform_update(self, serializer):
+        old_status = serializer.instance.order_status
+
+        order = serializer.save()
+        new_status = order.order_status
+
+        if old_status != new_status:
+            transaction.on_commit(
+                lambda: send_order_status_email.delay(
+                    order.user.email,
+                    order.user.username,
+                    str(order.order_id),
+                    order.order_status,
+                )
+            )
 
     def get_serializer_class(self):
         if self.action in ["create", "update", "partial_update"]:
