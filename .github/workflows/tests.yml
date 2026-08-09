@@ -31,6 +31,7 @@ jobs:
       STRIPE_SECRET_KEY: "sk_test_dummy"
       STRIPE_PUBLISHABLE_KEY: "pk_test_dummy"
       STRIPE_WEBHOOK_SECRET: "whsec_test_dummy"
+      TESTING: "True"
 
     steps:
       - name: Checkout code

@@ -205,24 +205,15 @@ Features:
     },
 }
 
-
-if config("TESTING", default=False, cast=bool):
-    CACHES = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-            "LOCATION": "test-cache",
-        }
-    }
-else:
-    CACHES = {
-        "default": {
-            "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": "redis://127.0.0.1:6379/1",
-            "OPTIONS": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            },
-        }
-    }
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    },
+}
 
 
 # =============== Start celerey congiguration section ===============
@@ -237,6 +228,9 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
 CELERY_TIMEZONE = TIME_ZONE
+
+CELERY_TASK_ALWAYS_EAGER = config("TESTING", default=False, cast=bool)
+CELERY_TASK_EAGER_PROPAGATES = config("TESTING", default=False, cast=bool)
 # =============== End celerey congiguration seciton ===============
 
 # =============== Start Email Configuration section ===============
