@@ -5,10 +5,10 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 from apps.orders.models import Order
-from .serializers import CreatePaymentIntentSerializer
+from .serializers import CreatePaymentIntentSerializer, PaymentIntentResponseSerializer
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -23,6 +23,10 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
         "to complete the payment."
     ),
     tags=["Payments"],
+    request=CreatePaymentIntentSerializer,
+    responses={
+        200: PaymentIntentResponseSerializer,
+    },
 )
 class CreatePaymentIntentAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -92,6 +96,12 @@ class CreatePaymentIntentAPIView(APIView):
         "Updates order payment status when a payment succeeds or fails."
     ),
     tags=["Payments"],
+    request=None,
+    responses={
+        200: OpenApiResponse(
+            description="Webhook received successfully."
+        ),
+    },
 )
 class StripeWebhookAPIView(APIView):
     permission_classes = []

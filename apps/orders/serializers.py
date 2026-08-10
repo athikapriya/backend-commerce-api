@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.db import transaction
 from decimal import Decimal
+from drf_spectacular.utils import extend_schema_field
 
 from .models import Order, OrderItem
 from apps.products.models import Product
@@ -9,15 +10,19 @@ from apps.products.models import Product
 # =============== Start OrderItem serializer section ===============
 class OrderItemSerializer(serializers.ModelSerializer):
     product = serializers.StringRelatedField()
-    item_subtotal = serializers.ReadOnlyField()
-    
+    item_subtotal = serializers.SerializerMethodField()
+
+    @extend_schema_field(serializers.DecimalField(max_digits=10, decimal_places=2))
+    def get_item_subtotal(self, obj):
+        return obj.item_subtotal
+
     class Meta:
         model = OrderItem
         fields = (
             "product",
             "unit_price",
             "quantity",
-            "item_subtotal"
+            "item_subtotal",
         )
 # =============== End OrderItem serializer seciton ===============
 

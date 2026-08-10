@@ -4,13 +4,16 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
 
     services:
       redis:
-        image: redis:7
+        image: redis:7.4
         ports:
           - 6379:6379
         options: >-
@@ -19,19 +22,35 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
-      SECRET_KEY: "django-test-secret-key"
+      SECRET_KEY: ${{ secrets.TEST_SECRET_KEY }}
       EMAIL_BACKEND: "django.core.mail.backends.locmem.EmailBackend"
       EMAIL_HOST: "localhost"
       EMAIL_PORT: "587"
       EMAIL_HOST_USER: "test@example.com"
-      EMAIL_HOST_PASSWORD: "test-password"
+      EMAIL_HOST_PASSWORD: ${{ secrets.TEST_EMAIL_PASSWORD }}
       EMAIL_USE_TLS: "False"
       DEFAULT_FROM_EMAIL: "test@example.com"
-      STRIPE_SECRET_KEY: "sk_test_dummy"
-      STRIPE_PUBLISHABLE_KEY: "pk_test_dummy"
-      STRIPE_WEBHOOK_SECRET: "whsec_test_dummy"
+      STRIPE_SECRET_KEY: ${{ secrets.TEST_STRIPE_SECRET_KEY }}
+      STRIPE_PUBLISHABLE_KEY: ${{ secrets.TEST_STRIPE_PUBLISHABLE_KEY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.TEST_STRIPE_WEBHOOK_SECRET }}
       TESTING: "True"
+      REDIS_URL: "redis://127.0.0.1:6379/1"
+      DATABASE_URL: "postgres://postgres:${{ secrets.TEST_DB_PASSWORD }}@127.0.0.1:5432/test_db"
 
     steps:
       - name: Checkout code
@@ -41,6 +60,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+          cache: "pip"
 
       - name: Install dependencies
         run: |
