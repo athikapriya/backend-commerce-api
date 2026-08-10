@@ -194,22 +194,48 @@ SIMPLE_JWT = {
 SPECTACULAR_SETTINGS = {
     'TITLE': 'BackendCommerce REST API',
     "DESCRIPTION": """
-A RESTful e-commerce backend built with Django REST Framework.
+A production-style RESTful e-commerce backend built with Django REST Framework.
 
-Features:
-- JWT Authentication
-- Product, Category and Order APIs
-- Product search, filtering, ordering and pagination
+Core Features:
+- JWT Authentication with access and refresh tokens
+- Customer registration, login, logout and profile management
+- Password change and password reset via email
+- Product and category management
 - Nested category hierarchy
+- Product search, filtering, ordering and pagination
+- Customer-specific cart and order management
 - Customer-specific order access
 - Admin-only product and order management
-- Interactive API documentation with Swagger UI and ReDoc
+- Order status management
+
+Background Processing:
+- Celery for asynchronous background tasks
+- Redis/Upstash Redis as the Celery message broker and result backend
+- Asynchronous welcome, password-reset and order notification emails
+
+Performance:
+- Redis-based caching
+- Database query optimization with select_related and prefetch_related
+- API request throttling
+
+Payments:
+- Stripe payment integration
+- Stripe webhook support
+
+API Documentation:
+- Interactive API documentation with Swagger UI
+- ReDoc API documentation
+
+The API is designed with a focus on security, performance,
+scalability and clean RESTful architecture.
+
 """,
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-    "SWAGGER_UI_SETTINGS": {
-        "persistAuthorization": True,
-    },
+"VERSION": "1.0.0",
+"SERVE_INCLUDE_SCHEMA": False,
+"SWAGGER_UI_SETTINGS": {
+"persistAuthorization": True,
+},
+
 }
 
 # =============== Start Redis configuration section ===============
