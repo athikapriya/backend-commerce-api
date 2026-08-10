@@ -19,8 +19,14 @@ from django.urls import path, include
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
+from django.shortcuts import redirect
+
+def root_redirect(request):
+    return redirect('swagger-ui')
+
 
 urlpatterns = [
+    path('', root_redirect),
     path('admin/', admin.site.urls),
     path("api/users/", include("apps.users.urls")),
     path("api/categories/", include("apps.categories.urls")),
