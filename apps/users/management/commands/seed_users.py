@@ -1,3 +1,4 @@
+import os
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 
@@ -7,28 +8,34 @@ class Command(BaseCommand):
     help = "Seed demo users"
 
     def handle(self, *args, **options):
-        
+
         users = [
             ("Customer1", "customer1@test.com"),
             ("Customer2", "customer2@test.com"),
             ("Customer3", "customer3@test.com"),
-            ("Customer4", 'customer4@test.com'),
+            ("Customer4", "customer4@test.com"),
             ("Customer5", "customer5@test.com"),
         ]
+
+        demo_password = os.getenv("DEMO_USER_PASSWORD", "change-me-demo-only")
 
         for username, email in users:
             if User.objects.filter(username=username).exists():
                 self.stdout.write(
-                    self.style.WARNING(f"{username} already exists.")
+                    self.style.WARNING(
+                        f"{username} already exists."
+                    )
                 )
                 continue
 
             User.objects.create_user(
                 username=username,
                 email=email,
-                password="test123"
+                password=demo_password,
             )
 
             self.stdout.write(
-                self.style.SUCCESS(f"{username} created successfully.")
+                self.style.SUCCESS(
+                    f"{username} created successfully."
+                )
             )
