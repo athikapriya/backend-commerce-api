@@ -272,7 +272,7 @@ demo_password = os.getenv("DEMO_USER_PASSWORD", "change-me-demo-only")
 # ===== End Demo user password =====
 
 # Production security settings
-if not DEBUG:
+if not DEBUG and not config("TESTING", default=False, cast=bool):
     SECURE_SSL_REDIRECT = True
 
     SESSION_COOKIE_SECURE = True
